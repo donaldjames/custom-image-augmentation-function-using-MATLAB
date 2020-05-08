@@ -1,4 +1,4 @@
-# custom_augmentation_fuction
+# custom_augmentation_function
 This is an image augmentation function written for beginners
 to do multiple image augmentation operations using MATLAB.
 
