@@ -20,8 +20,10 @@ function x = custom_augmentation_function(input_text_file, destination_folder, o
            return;
        end
     end
-    if ~exist(grayscale)
+    if ~exist('grayscale', 'var')
         grayscale_con = 0;
+    else
+        grayscale_con = 1;
     end
     x = "Failed";
     file_id = fopen(input_text_file);
@@ -44,41 +46,41 @@ function x = custom_augmentation_function(input_text_file, destination_folder, o
         image = imread(image_url);
         disp(image_url);
         % Augmenting the original image set
-        augment_image_cell = {};
-        for aug_method in augmentation_list
-            switch augmentation_list
+        augment_image_cell = [];
+        for aug_method = augmentation_list
+            switch aug_method
                 case 1
                     augmentation1 = imageDataAugmenter('RandRotation', [0, 360]); % Random Rotation
                     random_rotation = augment(augmentation1, image);
-                    augment_image_cell{end+1} = [random_rotation, 'random_rotation'];
+                    augment_image_cell = [augment_image_cell; {random_rotation}, 'random_rotation'];
                 case 2
                     augmentation2 = imageDataAugmenter('RandScale', [0.5, 1]); % Random Scale
                     random_scale = augment(augmentation2, image);
-                    augment_image_cell{end+1} = [random_scale, 'random_scale'];
+                    augment_image_cell = [augment_image_cell; {random_scale}, 'random_scale'];
                 case 3
                     augmentation3 = imageDataAugmenter('RandXReflection', true); % X Reflection
                     random_x_reflection = augment(augmentation3, image);
-                    augment_image_cell{end+1} = [random_x_reflection, 'random_x_reflection'];
+                    augment_image_cell = [augment_image_cell; {random_x_reflection}, 'random_x_reflection'];
                 case 4
                     augmentation4 = imageDataAugmenter('RandYReflection', true); % Y Reflection
                     random_y_reflection = augment(augmentation4, image);
-                    augment_image_cell{end+1} = [random_y_reflection, 'random_y_reflection'];
+                    augment_image_cell = [augment_image_cell; {random_y_reflection}, 'random_y_reflection'];
                 case 5
                     augmentation5 = imageDataAugmenter('RandXShear', [0, 45]); % Random X shear
                     random_x_shear = augment(augmentation5, image);
-                    augment_image_cell{end+1} = [random_x_shear, 'random_x_shear'];
+                    augment_image_cell = [augment_image_cell; {random_x_shear}, 'random_x_shear'];
                 case 6
                     augmentation6 = imageDataAugmenter('RandYShear', [0, 45]); % Random Y shear
                     random_y_shear = augment(augmentation6, image);
-                    augment_image_cell{end+1} = [random_y_shear, 'random_y_shear'];
+                    augment_image_cell = [augment_image_cell; {random_y_shear}, 'random_y_shear'];
                 case 7
                     augmentation7 = imageDataAugmenter('RandXTranslation', [0 45]); % Random X translation
                     random_x_translation = augment(augmentation7, image);
-                    augment_image_cell{end+1} = [random_x_translation, 'random_x_translation'];
+                    augment_image_cell = [augment_image_cell; {random_x_translation}, 'random_x_translation'];
                 case 8
                     augmentation8 = imageDataAugmenter('RandYTranslation', [0 45]); % Random Y translation
                     random_y_translation = augment(augmentation8, image);
-                    augment_image_cell{end+1} = [random_y_translation, 'random_y_translation'];
+                    augment_image_cell = [augment_image_cell; {random_y_translation}, 'random_y_translation'];
                 case 9
                     augmentation1 = imageDataAugmenter('RandRotation', [0, 360]); % Random Rotation
                     augmentation2 = imageDataAugmenter('RandScale', [0.5, 1]); % Random Scale
@@ -98,15 +100,15 @@ function x = custom_augmentation_function(input_text_file, destination_folder, o
                     random_y_shear = augment(augmentation6, image);
                     random_x_translation = augment(augmentation7, image);
                     random_y_translation = augment(augmentation8, image);
-                    augment_image_cell = {[image, 'source'], ...
-                        [random_rotation, 'random_rotation']...
-                        [random_scale, 'random_scale'], ...
-                        [random_x_reflection, 'random_x_reflection'], ...
-                        [random_y_reflection, 'random_y_reflection'], ...
-                        [random_x_shear, 'random_x_shear'], ...
-                        [random_y_shear, 'random_y_shear'], ...
-                        [random_x_translation, 'random_x_translation'], ...
-                        [random_y_translation, 'random_y_translation']};                    
+                    augment_image_cell = [augment_image_cell; [{image}, 'source']; ...
+                        [{random_rotation}, 'random_rotation'];...
+                        [{random_scale}, 'random_scale']; ...
+                        [{random_x_reflection}, 'random_x_reflection']; ...
+                        [{random_y_reflection}, 'random_y_reflection']; ...
+                        [{random_x_shear}, 'random_x_shear']; ...
+                        [{random_y_shear}, 'random_y_shear']; ...
+                        [{random_x_translation}, 'random_x_translation']; ...
+                        [{random_y_translation}, 'random_y_translation']];                    
                 otherwise
                     disp("provide a valid option list with options between (0-8) or '9' for all");
             end
@@ -119,14 +121,16 @@ function x = custom_augmentation_function(input_text_file, destination_folder, o
             [rows, columns, layers] = size(image);
             if layers > 1
                 grayscale_image = rgb2gray(image);
-                augment_image_cell{end+1} = [grayscale_image, 'grayscale'];
+                augment_image_cell = [augment_image_cell; {grayscale_image}, 'grayscale'];
             end
         end
         %%
         % Saving the image to new folder car_train_image
         for i = 1:length(augment_image_cell)
-            updated_filename = destination_folder + augment_image_cell{i}(2) + "_" + image_name;
-            imwrite(augment_image_cell{i}(1), updated_filename);
+            augmentation_name = augment_image_cell(i, 2);
+            augmented_image = augment_image_cell(i, 1);
+            updated_filename = destination_folder + '\' + augmentation_name{1} + "_" + image_name;
+            imwrite(augmented_image{1}, updated_filename);
             image_updated_list{end + 1} = updated_filename + image_label;
         end
         %%
