@@ -9,7 +9,8 @@
 %                       %% to save the images. Try to provide full path 
 %                       %% for hussle free operation
 % augmentation_list = ''; %% for eg [1 5 8] or [9] for all
-% grayscale = ''; %% optional argument. provide '1'  if you wan't grayscale
-%                 %% conversion
+% grayscale = ''; %% ***optional argument. provide '1'  if you wan't grayscale
+%                 %% conversion. eg: grayscale = 1; if you like to do
+%                 %%grayscale conversion
 %%
 x = custom_augmentation_function(input_text_file, destination_folder, output_text_file, augmentation_list, grayscale);
